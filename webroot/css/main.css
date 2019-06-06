@@ -1,0 +1,336 @@
+@charset "utf-8";
+.hidden-vt{display:none!important}
+.tags{
+	padding-top:10px; 
+	border-top: 1px dashed #333;
+}
+.keywords{
+    border: 1px solid #2b2e2f;
+    padding: 5px;
+    color: #525244;
+    font-size: 13px;
+    margin: 10px 0;
+}
+.keywords a{
+	color: gray;
+}
+.play-tags{
+    background: #464545;
+    padding: 10px;
+}
+.play-tags .caption {
+    background: #00B0E4;
+    padding: 2px 5px;
+    color: #fff;
+    display: inline-block;
+}
+.play-tags h2 {
+    font-size: 11px;
+	display: inline;
+}
+#background_lamp{
+	position: fixed;
+	background-color: #000;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	z-index: 5;
+}
+.light.off::after {
+	content: "Bật đèn";
+}
+.light::after {
+	content: "Tắt đèn";
+}
+#player-vtv{
+	background-color: #000;
+	z-index: 10;
+}
+.autonext::after{
+	content: "Tự chuyển tập: OFF";
+}
+.autonext.active::after{
+	content: "Tự chuyển tập: ON";
+}
+.jw-icon-hd-360p:before {
+	content: "360p";
+}
+.jw-icon-hd-480p:before {
+	content: "480p";
+}
+.jw-icon-hd-720p:before {
+	content: "720p";
+}
+.jw-icon-hd-1080p:before {
+	content: "1080p";
+}
+.change-player i{
+	background-position: -115px -171px;
+}
+.like-msg{
+	margin-left: 10px;
+}
+.thongbao-lichchieu {
+	background: #dfdfdf;
+	padding: 10px;
+	outline: 0px;
+	color: #4d4d4d;
+	font-size: 13px;
+	line-height: 1.5;
+	border: 1px solid #000000;
+	margin-top: 6px;
+}
+.thongbao-lichchieu span{
+	color:#FDDD37;
+}
+.banner_mobile{
+	display:none;
+	width: 300px;
+	height: 250px;
+	border: 1px solid rgb(1, 174, 240);
+	margin:auto;
+}
+.infop{text-align: center;}
+.media.main-controls{
+	padding: 10px 10px;
+}
+h4.play{
+	padding:15px 0px;
+}
+.item-xem-phim{
+	display: inline-block;
+	padding: 4px;
+}
+.btn.btn-red{
+	color: #ffffff;
+	background-color: #d9534f;
+	border-color: #d9534f;
+}
+.btn.btn-download{
+color: #ffffff;
+    background-color: #417a5b;
+    border-color: #28632d;
+}
+.btn.btn-red{
+    float:left;
+    margin-right: 10px;
+}
+.btn.btn-download{
+    float:right;
+}
+#pagetext{
+	border: 1px solid #486771;
+	padding: 5px;
+}
+.widget .widget-title .title{
+	margin-left: 10px;
+}
+#player-vtv .countdown-wrapper {
+	color: white;
+	font-size: 20px;
+	left: 0;
+	position: absolute;
+	text-align: center;
+	top: 35%;
+	width: 100%;
+}
+#player-vtv .countdown-wrapper .countdown{
+	font-weight: 600px;
+	margin: 20px 0;
+}
+.label{
+	display: inline;
+	padding: .2em .6em .3em;
+	font-size: 75%;
+	font-weight: 700;
+	line-height: 1;
+	color: #fff;
+	text-align: center;
+	white-space: nowrap;
+	vertical-align: baseline;
+	border-radius: .25em;
+}
+#___plusone_0{
+	width: 65px !important;
+}
+.float-ck { position: fixed; bottom: 0px; z-index: 9999}
+* html .float-ck /* IE6 position fixed Bottom */{position:absolute;bottom:auto;top:expression(eval (document.documentElement.scrollTop+document.docum entElement.clientHeight-this.offsetHeight-(parseInt(this.currentStyle.marginTop,10)||0)-(parseInt(this.currentStyle.marginBottom,10)||0))) ;}
+#float_content_right {border: 1px solid #01AEF0;}
+#hide_float_right {text-align:right; font-size: 11px;}
+#hide_float_right a {background: #01AEF0; padding: 0px; color: #FFF;font-size: 15px;}
+.x_thoat {
+	width: 50px;
+	background: red;
+	color: white;
+	text-align: center;
+	height: 22px;
+	line-height: 50px;
+	cursor: pointer;
+	right: -2px;
+	position: absolute;
+	font-family: Arial;
+	z-index: 9999999999;
+	background: url(/images/icon_eclick.png) #ccc 0 0 no-repeat;
+}
+
+#suggestions {
+	margin-left:-3px;
+	margin-top:6px;
+	position:relative;
+}
+
+#suggestions.msuggestions {
+	margin-top:-44px;
+}
+
+#suggestions strong {
+	color:#c2c2c2;
+}
+
+#suggestions ul.autocomplete-list {
+	background: #fff none repeat scroll 0 0;
+	border-radius: 6px;
+	left: 3px;
+	list-style: outside none none;
+	padding: 5px 0 10px;
+	position: absolute;
+	top: 42px;
+	z-index:15;
+}
+
+#suggestions ul.autocomplete-list li {
+	border-bottom:1px dashed #333;
+	display:block;
+	height:35px;
+	line-height:35px;
+	margin:0 8px;
+	padding:0 5px;
+	overflow:hidden;
+	text-overflow:ellipsis;
+	white-space:nowrap;
+	color:#000;
+}
+
+#suggestions ul.autocomplete-list li a {
+	width:100%;
+	display:inline-block;
+}
+
+#suggestions ul.autocomplete-list li.last {
+	border-bottom:0;
+	background:transparent url(/images/icon_childparenthover.png) no-repeat scroll right center;
+}
+
+#suggestions ul.autocomplete-list li.last a {
+	color:#337ab7;
+}
+
+#suggestions ul.autocomplete-list li.film {
+	height:48px;
+	line-height:20px;
+	margin-top:4px;
+}
+
+#suggestions ul.autocomplete-list li.film img {
+	width:40px;
+	padding-right:10px;
+	float:left;
+	display:inline;
+	height:45px;
+}
+
+#suggestions ul.autocomplete-list li.film a {
+	line-height:14px;
+}
+
+#suggestions ul.autocomplete-list li.film span {
+	font-size:12px;
+}
+
+#suggestions ul.autocomplete-list li.hover {
+	background:#151515 none repeat scroll 0 0;
+}
+
+#suggestions ul.autocomplete-list li strong {
+	color:#0094fc;
+}
+
+#suggestions ul.autocomplete-list li span {
+	color:#0094fc;
+}
+
+#suggestions ul.autocomplete-list li a span {
+	color:#333;
+}
+
+#suggestions ul.autocomplete-list li a {
+	color:#000;
+}
+
+#suggestions ul.autocomplete-list li a:hover {
+	color:#0094fc;
+}
+
+#suggestions ul.autocomplete-list li a.active {
+	color:#0094fc;
+}
+
+#suggestions .keyword {
+	background:#2d2d2d none repeat scroll 0 0;
+	border:1px solid #000;
+	border-radius:4px;
+	box-shadow:0 1px 0 0 #242424;
+	color:#8c8c8c;
+	float:left;
+	font-size:12px;
+	height:38px;
+	line-height:38px;
+	margin-bottom:5px;
+	margin-left:2px;
+	padding:0 12px;
+	width:326px;
+}
+
+#suggestions .submit {
+	background-color:#000;
+	background-position:0 0;
+	border:0;
+	cursor:pointer;
+	float:left;
+	height:40px;
+	margin-left:8px;
+	width:56px;
+}
+#header #logo span {
+	display: none;
+}
+#footer h5 {
+	font-size: 13px;
+	color: #F2F2F2;
+	font-weight: bold;
+}
+#footer ul.column-links ul {
+	margin-top: 10px;
+}
+
+#suggestions .submit:hover {
+	background-position:-56px 0;
+}
+
+.watch{
+	display: none;
+}
+
+@media all and (min-device-width: 240px) and (max-device-width:480px),all and (max-width:540px),all and (min-device-width:320px) and (max-device-width:480px) and (orientation:landscape) and (-webkit-min-device-pixel-ratio:2) {
+	#suggestions ul.autocomplete-list {
+		position: initial;
+		margin-top: 35px;
+	}
+    .banner_mobile {
+        display:block !important;
+    }
+    .float-ck{
+        display:none;
+    }
+}
