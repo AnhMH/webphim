@@ -26,14 +26,15 @@
 <div id="menu">
     <ul class="container">
         <li class="active home">
-            <a href="http://autofb.localhost"><i class="fa fa-home" aria-hidden="true"></i>Trang chủ</a>
+            <a href="<?php echo $BASE_URL;?>"><i class="fa fa-home" aria-hidden="true"></i>Home</a>
         </li>
-
-        <li>
-            <a title="Phim chiếu rạp">Thể loại</a>
-            <ul class="sub" style="width: 125px;">
-                <li><a href="http://autofb.localhost/danh-sach/Anime" title="Anime">Anime</a></li>
-            </ul>
-        </li>
+        <?php if (!empty($_countries)): ?>
+            <?php foreach ($_countries as $c): ?>
+            <li>
+                <a href="<?php echo $BASE_URL;?>/cate/<?php echo $c['slug'];?>" title="<?php echo $c['name'];?>"><?php echo $c['name'];?></a>
+            </li>
+            <?php endforeach; ?>
+        <?php endif; ?>
+        
     </ul>
 </div>

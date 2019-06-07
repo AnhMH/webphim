@@ -17,6 +17,7 @@ namespace App\Controller;
 use Cake\Controller\Controller;
 use Cake\Event\Event;
 use Cake\Routing\Router;
+use Cake\ORM\TableRegistry;
 
 /**
  * Application Controller
@@ -102,6 +103,9 @@ class AppController extends Controller
         $this->set('controller', $this->controller);
         $this->set('action', $this->action);
         $this->set('BASE_URL', $this->BASE_URL);
+        
+        $_countries = TableRegistry::get('Countries')->find()->toList();
+        $this->set('_countries', $_countries);
 
         // Set default layout
         $this->setLayout();

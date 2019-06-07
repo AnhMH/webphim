@@ -33,7 +33,7 @@ $time = time();
                 </ul>
             </div>  
         </nav>
-        
+        <?= $this->Flash->render() ?>
         <div class="container" style="margin-top:30px">
             <?= $this->fetch('content') ?>
         </div>
