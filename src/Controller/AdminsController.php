@@ -55,7 +55,7 @@ class AdminsController extends AppController
     {
         $this->request->allowMethod(['post', 'delete']);
 
-        $admin = $this->Admins->findBySlug($id)->firstOrFail();
+        $admin = $this->Admins->findById($id)->firstOrFail();
         if ($this->Admins->delete($admin)) {
             $this->Flash->success(__('The {0} admin has been deleted.', $admin->name));
             return $this->redirect(['action' => 'index']);
