@@ -4,7 +4,6 @@
     <tr>
         <th>Name</th>
         <th>Account</th>
-        <th>Password</th>
         <th>Action</th>
     </tr>
 
@@ -16,10 +15,7 @@
             <?= $this->Html->link($admin->name, ['action' => 'view', $admin->id]) ?>
         </td>
         <td>
-            <?= $admin->created->account ?>
-        </td>
-        <td>
-            <?= $admin->created->password ?>
+            <?= $admin->account ?>
         </td>
         <td>
             <?= $this->Html->link('Edit', ['action' => 'edit', $admin->id]) ?>

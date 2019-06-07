@@ -53,6 +53,23 @@ class AppController extends Controller
             'enableBeforeRedirect' => false,
         ]);
         $this->loadComponent('Flash');
+        
+        $this->loadComponent('Auth', [
+            'authenticate' => [
+                'Form' => [
+                    'fields' => [
+                        'username' => 'account',
+                        'password' => 'password'
+                    ]
+                ]
+            ],
+            'loginAction' => [
+                'controller' => 'Users',
+                'action' => 'login',
+            ],
+             // If unauthorized, return them to page they were just on
+            'unauthorizedRedirect' => $this->referer()
+        ]);
 
         /*
          * Enable the following component for recommended CakePHP security settings.
@@ -96,6 +113,8 @@ class AppController extends Controller
     public function setLayout() {
         if ($this->controller == 'ajax') {
             $this->viewBuilder()->setLayout('ajax');
+        } elseif (in_array ($this->controller, array('users', 'countries'))) {
+            $this->viewBuilder()->setLayout('admin');
         } else {
             $this->viewBuilder()->setLayout('front');
         }

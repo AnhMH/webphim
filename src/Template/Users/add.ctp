@@ -6,6 +6,6 @@
     echo $this->Form->control('account');
     echo $this->Form->control('password');
     echo $this->Form->control('name');
-    echo $this->Form->button(__('Save Admin'));
+    echo $this->Form->button(__('Save'));
     echo $this->Form->end();
 ?>
