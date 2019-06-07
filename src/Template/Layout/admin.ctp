@@ -22,13 +22,13 @@ $time = time();
             <div class="collapse navbar-collapse" id="collapsibleNavbar">
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Link</a>
+                        <a class="nav-link" href="<?php echo $BASE_URL;?>/users">Admin</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Link</a>
+                        <a class="nav-link" href="<?php echo $BASE_URL;?>/countries">Countries</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Link</a>
+                        <a class="nav-link" href="<?php echo $BASE_URL;?>/movies">Movies</a>
                     </li>    
                 </ul>
             </div>  
