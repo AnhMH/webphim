@@ -104,7 +104,13 @@ class AppController extends Controller
         $this->set('action', $this->action);
         $this->set('BASE_URL', $this->BASE_URL);
         
-        $_countries = TableRegistry::get('Countries')->find()->toList();
+        $this->set('_movieTypes', array(
+            '1' => 'Series',
+            '2' => 'Film',
+            '3' => 'Video'
+        ));
+        
+        $_countries = $this->getCountries();
         $this->set('_countries', $_countries);
 
         // Set default layout
@@ -123,8 +129,6 @@ class AppController extends Controller
             $this->viewBuilder()->setLayout('front');
         }
     }
-    
-    
     
     /**
      * Convert string to url
@@ -156,5 +160,19 @@ class AppController extends Controller
         $str = str_replace("?", "", $str);
         
         return strtolower($str);
+    }
+    
+    /**
+     * Get countries
+     *
+     * @author thailh
+     * @param string $string String for convert     
+     * @return string
+     */
+    public function getCountries()
+    {
+        $data = array();
+        $data = TableRegistry::get('Countries')->find()->toList();
+        return $data;
     }
 }

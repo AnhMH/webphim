@@ -39,7 +39,7 @@ class MoviesController extends AppController {
                     $data->image = $this->BASE_URL.'/images/movies/'.$imageName;
                 }
             }
-
+            
             if ($this->Movies->save($data)) {
                 $this->Flash->success(__('Your movie has been saved.'));
                 return $this->redirect(['action' => 'index']);
@@ -51,6 +51,7 @@ class MoviesController extends AppController {
 
     public function edit($id) {
         $data = $this->Movies->findById($id)->firstOrFail();
+        $time = time();
         if ($this->request->is(['post', 'put'])) {
             $this->Movies->patchEntity($data, $this->request->getData());
             
@@ -66,7 +67,7 @@ class MoviesController extends AppController {
                 //only process if the extension is valid
                 if(in_array($ext, $arr_ext))
                 {
-                    $imageName = $data->slug.'-'.time();
+                    $imageName = $data->slug.'-'.$time;
                     
                     move_uploaded_file($image['tmp_name'], WWW_ROOT . '/images/movies/' . $imageName);
 
