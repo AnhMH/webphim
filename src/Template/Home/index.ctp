@@ -17,14 +17,14 @@ echo $this->element('Layout/sliders', array(
                             <?php foreach ($movies as $v): ?>
                             <li class="nhan-anime">
                                 <div class="poster">
-                                    <a title="<?php echo $v['name'];?>" href="<?php echo $BASE_URL.'/'.$v['slug'];?>">
+                                    <a title="<?php echo $v['name'];?>" href="<?php echo $BASE_URL.'/videos/detail/'.$v['slug'];?>">
                                         <img alt="<?php echo $v['name'];?>" src="<?php echo $v['image'];?>">
                                     </a>
                                     <span class="mli-eps"><span><?php echo $v['last_episode'];?></span></span>
                                 </div>
                                 <div class="name">
                                     <h4>
-                                        <a title="<?php echo $v['name'];?>" href="<?php echo $BASE_URL.'/'.$v['slug'];?>"><?php echo $v['name'];?></a>
+                                        <a title="<?php echo $v['name'];?>" href="<?php echo $BASE_URL.'/videos/detail/'.$v['slug'];?>"><?php echo $v['name'];?></a>
                                     </h4>
                                     <dfn><?php echo $v['name'];?></dfn>
                                 </div>
@@ -32,7 +32,6 @@ echo $this->element('Layout/sliders', array(
                             <?php endforeach; ?>
                         <?php endif; ?>
                     </ul>
-                    <script type="text/javascript" src="http://autofb.localhost/assets/js/loadmore.js"></script>
                 </div>
             </div>
         </div>

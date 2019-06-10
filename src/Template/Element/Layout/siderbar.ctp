@@ -11,7 +11,7 @@
                     <li>
                         <span><i class="fa fa-star" aria-hidden="true"></i></span>
                         <h5>
-                            <a title="<?php echo $v['name'];?>" href="<?php echo $BASE_URL.'/'.$v['slug'];?>"><?php echo $v['name'];?></a>
+                            <a title="<?php echo $v['name'];?>" href="<?php echo $BASE_URL.'/videos/detail/'.$v['slug'];?>"><?php echo $v['name'];?></a>
                         </h5>
                         <dfn><?php echo $v['name'];?></dfn>
                     </li>  
@@ -32,7 +32,7 @@
                 <li>
                     <span class="status"><?php echo $v['pro_year'];?></span>
                     <img alt="<?php echo $v['name'];?>" src="<?php echo $v['image'];?>">
-                    <a title="<?php echo $v['name'];?>" href="<?php echo $BASE_URL.'/'.$v['slug'];?>"><?php echo $v['name'];?></a>
+                    <a title="<?php echo $v['name'];?>" href="<?php echo $BASE_URL.'/videos/detail/'.$v['slug'];?>"><?php echo $v['name'];?></a>
                     <dfn><?php echo $v['name'];?></dfn>
                     <dfn><?php echo date('Y-m-d', $v['updated']);?></dfn>
                 </li>
