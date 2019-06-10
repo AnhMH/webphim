@@ -112,6 +112,11 @@ class AppController extends Controller
         
         $_countries = $this->getCountries();
         $this->set('_countries', $_countries);
+        
+        $newMovies = $this->getNewMovies();
+        $randomMovies = $this->getRandomMovies();
+        $this->set('_newMovies', $newMovies);
+        $this->set('_randomMovies', $randomMovies);
 
         // Set default layout
         $this->setLayout();
@@ -173,6 +178,34 @@ class AppController extends Controller
     {
         $data = array();
         $data = TableRegistry::get('Countries')->find()->toList();
+        return $data;
+    }
+    
+    /**
+     * Get new movies
+     *
+     * @author thailh
+     * @param string $string String for convert     
+     * @return string
+     */
+    public function getNewMovies()
+    {
+        $data = array();
+        $data = TableRegistry::get('Movies')->find()->toList();
+        return $data;
+    }
+    
+    /**
+     * Get random movies
+     *
+     * @author thailh
+     * @param string $string String for convert     
+     * @return string
+     */
+    public function getRandomMovies()
+    {
+        $data = array();
+        $data = TableRegistry::get('Movies')->find()->toList();
         return $data;
     }
 }

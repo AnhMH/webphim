@@ -14,8 +14,10 @@ class HomeController extends AppController
     public function index()
     {
         $countries = TableRegistry::get('Countries')->find()->toList();
+        $movies = TableRegistry::get('Movies')->find()->toList();
         $this->set(compact(array(
-            'countries'
+            'countries',
+            'movies'
         )));
     }
 }
