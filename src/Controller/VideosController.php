@@ -57,4 +57,15 @@ WHERE
             return $this->redirect($this->BASE_URL);
         }
     }
+    
+    public function search()
+    {
+        $tag = !empty($_GET['s']) ? $_GET['s'] : '';
+        $connection = ConnectionManager::get('default');
+        $sql = "SELECT * FROM movies where tags LIKE '%{$tag}%'";
+        $movies = $connection->execute($sql)->fetchAll('assoc');
+        $this->set(compact(array(
+            'movies'
+        )));
+    }
 }

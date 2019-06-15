@@ -7,7 +7,7 @@
                 </a>
             </div>
             <div class="item">
-                <a href="<?php echo $BASE_URL;?>/cates/<?php echo $data['cate_slug'];?>">
+                <a href="<?php echo $BASE_URL;?>/cates/detail/<?php echo $data['cate_slug'];?>">
                     <span><?php echo $data['cate_name'];?></span>
                 </a>
             </div>
