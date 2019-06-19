@@ -191,7 +191,7 @@ class AppController extends Controller
     public function getNewMovies()
     {
         $data = array();
-        $data = TableRegistry::get('Movies')->find()->toList();
+        $data = TableRegistry::get('Movies')->find()->limit(10)->toList();
         return $data;
     }
     
@@ -205,7 +205,7 @@ class AppController extends Controller
     public function getRandomMovies()
     {
         $data = array();
-        $data = TableRegistry::get('Movies')->find()->toList();
+        $data = TableRegistry::get('Movies')->find('all')->order('rand()')->limit(15)->toList();
         return $data;
     }
 }

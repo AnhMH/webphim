@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use Cake\Datasource\ConnectionManager;
+
 class MoviesController extends AppController {
 
     public function index() {
@@ -39,7 +41,6 @@ class MoviesController extends AppController {
                     $data->image = $this->BASE_URL.'/images/movies/'.$imageName;
                 }
             }
-            
             if ($this->Movies->save($data)) {
                 $this->Flash->success(__('Your movie has been saved.'));
                 return $this->redirect(['action' => 'index']);
@@ -95,6 +96,22 @@ class MoviesController extends AppController {
             $this->Flash->success(__('The {0} movie has been deleted.', $data->name));
             return $this->redirect(['action' => 'index']);
         }
+    }
+    
+    public function crawl() {
+        $sql = "SELECT * FROM crawler_movies";
+        $connection = ConnectionManager::get('default');
+        $data = $connection->execute($sql)->fetchAll('assoc');
+        foreach ($data as $v) {
+            $time = time();
+            $movie = $this->Movies->newEntity();
+            $movie = $this->Movies->patchEntity($movie, $v);
+            $movie->slug = $this->convertURL($movie->name);
+            $movie->created = $time;
+            $movie->updated = $time;
+            $this->Movies->save($movie);
+        }
+        die('DONE');
     }
 
 }

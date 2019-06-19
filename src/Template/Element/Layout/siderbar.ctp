@@ -29,6 +29,7 @@
         </div>
         <div class="widget-body">
             <ul>
+                <?php foreach ($_randomMovies as $v): ?>
                 <li>
                     <span class="status"><?php echo $v['pro_year'];?></span>
                     <img alt="<?php echo $v['name'];?>" src="<?php echo $v['image'];?>">
@@ -36,6 +37,7 @@
                     <dfn><?php echo $v['name'];?></dfn>
                     <dfn><?php echo date('Y-m-d', $v['updated']);?></dfn>
                 </li>
+                <?php endforeach; ?>
             </ul>
         </div>
     </div>
