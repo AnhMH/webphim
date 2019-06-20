@@ -15,7 +15,10 @@ class VideosController extends AppController
     
     public function detail($slug = '')
     {
+        $videos = array();
+        $server = 0;
         $video = '';
+        $ep = '';
         $connection = ConnectionManager::get('default');
         $movieModel = TableRegistry::get('Movies');
         $sqlDetail = "SELECT 
@@ -31,7 +34,9 @@ WHERE
         $data = $connection->execute($sqlDetail)->fetchAll('assoc');
         if (!empty($data[0])) {
             $data = $data[0];
+            $video = '';
             $ep = !empty($_GET['ep']) ? $_GET['ep'] : '';
+            $server = !empty($_GET['s']) ? $_GET['s'] : 0;
             $sqlEpisodes = "SELECT * FROM episodes WHERE movie_id = {$data['id']}";
             $episodes = $connection->execute($sqlEpisodes)->fetchAll('assoc');
             if (!empty($episodes)) {
@@ -46,11 +51,15 @@ WHERE
                         }
                     }
                 }
+                $videos = explode("\n", $video);
+                $video = $videos[$server];
             }
             $this->set(compact(array(
                 'episodes',
                 'data',
                 'ep',
+                'videos',
+                'server',
                 'video'
             )));
         } else {

@@ -26,7 +26,12 @@
                     <div class="server-wrapper">
                         <h3 class="watch">Episodes</h3>
                         <div class="server" data-type="watch">
-                            <!--<label>Episodes</label>-->
+                            <ul class="episodes">
+                                <?php foreach ($videos as $k => $v): ?>
+                                <li><a class="<?php echo $server == $k ? 'active' : '';?>" href="<?php echo $BASE_URL;?>/videos/detail/<?php echo $data['slug'];?>?ep=<?php echo $ep;?>&s=<?php echo $k;?>">Server #<?php echo $k+1;?></a></li>
+                                <?php endforeach; ?>
+                            </ul>
+                            <label>Episodes</label>
                             <ul class="episodes">
                                 <?php if (!empty($episodes)): ?>
                                 <?php foreach ($episodes as $e): ?>
