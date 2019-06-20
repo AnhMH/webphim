@@ -62,7 +62,7 @@ WHERE
     {
         $tag = !empty($_GET['s']) ? $_GET['s'] : '';
         $connection = ConnectionManager::get('default');
-        $sql = "SELECT * FROM movies where tags LIKE '%{$tag}%'";
+        $sql = "SELECT * FROM movies where tags LIKE '%{$tag}%' or name LIKE '%{$tag}%' order by id DESC";
         $movies = $connection->execute($sql)->fetchAll('assoc');
         $this->set(compact(array(
             'movies'

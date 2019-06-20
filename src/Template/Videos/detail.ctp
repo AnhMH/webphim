@@ -20,26 +20,7 @@
         </div>
 
         <div id="media">
-            <div class="player-wrapper">
-                <script type="text/javascript" src="<?php echo $BASE_URL; ?>/js/jwplayer.js"></script>
-                <div id="moviePlayer"></div>
-                <script>
-                    jwplayer("moviePlayer").setup({
-                        "file": "<?php echo $video;?>",
-                        "height": '100%',
-                        "width": '100%',
-                    });
-                </script>
-<!--                <div class="controls" itemscope="" itemtype="http://data-vocabulary.org/Review-aggregate">
-                    <a target="_blank" href="<?php echo $BASE_URL; ?>"><div class="download"><i></i><span>Download</span></div></a>
-                    <div class="light"><i></i></div>
-                    <div class="autonext active"><i></i></div>
-                    <div class="toggle-size playermini" data-on="Thu nhỏ" data-off="Phóng to">
-                        <i class="fa fa-exchange"></i> <span>Phóng to</span>
-                    </div>
-
-                </div>-->
-            </div>
+            <?php echo $this->element('Layout/videoplayer', array('video' => $video));?>
             <div class="main-controls">
                 <div class="server-list" style="margin-left: 0px !important;">
                     <div class="server-wrapper">
