@@ -1,13 +1,13 @@
-<h1>Movies</h1>
-<p><?= $this->Html->link("Add Movie", ['action' => 'add']) ?></p>
-<table class="table-bordered">
-    <tr>
-        <th>Name</th>
-        <th colspan="2">Action</th>
-    </tr>
-
-<!-- Here's where we iterate through our $admins query object, printing out admin info -->
-
+<h1>Episodes</h1>
+<a href="<?php echo $BASE_URL; ?>/episodes/add/<?php echo $movieId;?>">Add episode</a>
+<table class="table table-striped table-bordered dataTable" style="width:100%">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
 <?php foreach ($data as $v): ?>
     <tr>
         <td>
@@ -23,5 +23,5 @@
         </td>
     </tr>
 <?php endforeach; ?>
-
+</tbody>
 </table>

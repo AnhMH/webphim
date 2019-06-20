@@ -5,9 +5,16 @@ namespace App\Controller;
 class EpisodesController extends AppController {
 
     public function index() {
-        $this->loadComponent('Paginator');
-        $data = $this->Paginator->paginate($this->Episodes->find());
-        $this->set(compact('data'));
+        $movieId = !empty($_GET['movie_id']) ? $_GET['movie_id'] : '';
+        if (!empty($movieId)) {
+            $data = $this->Episodes->find()->where(['movie_id' => $movieId])->toList();
+        } else {
+            $data = $this->Episodes->find()->toList();
+        }
+        $this->set(compact(array(
+            'data',
+            'movieId'
+        )));
     }
 
     public function view($id = null) {
@@ -27,7 +34,8 @@ class EpisodesController extends AppController {
             
             if ($this->Episodes->save($data)) {
                 $this->Flash->success(__('Your episode has been saved.'));
-                return $this->redirect(['action' => 'index']);
+                $url = $this->BASE_URL.'/episodes?movie_id='.$movieId;
+                return $this->redirect($url);
             }
             $this->Flash->error(__('Unable to add your Episode.'));
         }
@@ -47,7 +55,8 @@ class EpisodesController extends AppController {
             // Save data
             if ($this->Episodes->save($data)) {
                 $this->Flash->success(__('Your movie has been updated.'));
-                return $this->redirect(['action' => 'index']);
+                $url = $this->BASE_URL.'/episodes?movie_id='.$data->movie_id;
+                return $this->redirect($url);
             }
             $this->Flash->error(__('Unable to update your Episode.'));
         }
