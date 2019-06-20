@@ -3,13 +3,17 @@
 namespace App\Controller;
 
 use Cake\Datasource\ConnectionManager;
+use Cake\ORM\TableRegistry;
 
 class MoviesController extends AppController {
 
     public function index() {
-        $this->loadComponent('Paginator');
-        $data = $this->Paginator->paginate($this->Movies->find());
-        $this->set(compact('data'));
+        $data = $this->Movies->find()->toList();
+        $countries = $this->key_value(TableRegistry::get('Countries')->find()->toArray(), 'id', 'name');
+        $this->set(compact(array(
+            'data',
+            'countries'
+        )));
     }
 
     public function view($id = null) {

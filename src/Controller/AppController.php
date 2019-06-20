@@ -208,4 +208,23 @@ class AppController extends Controller
         $data = TableRegistry::get('Movies')->find('all')->order('rand()')->limit(15)->toList();
         return $data;
     }
+    
+    /**
+     * Method key_value - filter array with key and value   
+     *  
+     * @author thailh
+     * @param array $arr Array need to filter
+     * @param string $key Key to filter
+     * @param string $value Value to filter
+     * @return array Array after filtering
+     */
+    public function key_value($arr, $key, $value) {
+        $result = array();
+        if ($arr) {
+            foreach ($arr as $item) {
+                $result[$item[$key]] = $item[$value];
+            }
+        }
+        return $result;
+    }
 }
