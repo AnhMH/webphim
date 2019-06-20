@@ -3,6 +3,7 @@
 <table class="table table-striped table-bordered dataTable" style="width:100%">
     <thead>
         <tr>
+            <th>ID</th>
             <th>Image</th>
             <th>Name</th>
             <th>Country</th>
@@ -14,6 +15,7 @@
     <tbody>
         <?php foreach ($data as $v): ?>
             <tr>
+                <td><?php echo $v['id'];?></td>
                 <td>
                     <image src="<?= $v->image; ?>" width="150"/>
                 </td>

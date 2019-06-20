@@ -1,6 +1,8 @@
 <h1>Edit Movie</h1>
+<a href="<?php echo $BASE_URL; ?>/episodes/add/<?php echo $data['id']; ?>">Add episode</a>
+<a href="<?php echo $BASE_URL; ?>/episodes?movie_id=<?php echo $data['id']; ?>">Manage episodes</a>
 <?php
-    echo $this->Form->create($data, ['type' => 'file']);
+    echo $this->Form->create($data, ['type' => 'file', 'class' => 'custom-form']);
     echo $this->Form->control('name');
 ?>
 <div class="form-group">
@@ -11,9 +13,14 @@
         <?php endforeach; ?>
     </select>
 </div>
-
+<?php if (!empty($data['image'])): ?>
+<div class="form-group input">
+    <label>Old image</label>
+    <img src="<?php echo $data['image'];?>" width="200px"/>
+</div>
+<?php endif;?>
 <?php
-    echo $this->Form->control('image2', ['type' => 'file']);
+    echo $this->Form->control('image2', ['type' => 'file', 'label' => 'New image']);
     echo $this->Form->control('description', ['type' => 'textarea', 'cols' => 100, 'rows' => '7']);
     echo $this->Form->control('trailer');
     echo $this->Form->control('runtime');
@@ -29,7 +36,7 @@
     </select>
 </div>
 <?php
-    echo $this->Form->control('pro_year');
+    echo $this->Form->control('last_episode');
     echo $this->Form->button(__('Save'));
     echo $this->Form->end();
 ?>

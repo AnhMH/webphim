@@ -1,3 +1,11 @@
-.custom-form input {
+.custom-form input,
+.custom-form textarea {
     display: block;
+    width: 100%;
+}
+
+.custom-form button {
+    margin: 10px auto;
+    display: block;
+    padding: 10px 20px;
 }

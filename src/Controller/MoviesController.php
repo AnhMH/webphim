@@ -58,10 +58,12 @@ class MoviesController extends AppController {
         $data = $this->Movies->findById($id)->firstOrFail();
         $time = time();
         if ($this->request->is(['post', 'put'])) {
-            $this->Movies->patchEntity($data, $this->request->getData());
+            $param = $this->request->getData();
+            $this->Movies->patchEntity($data, $param);
             
             // Modify data
             $data->slug = $this->convertURL($data->name);
+//            $data->type_id = $param['type_id'];
             $data->updated = $time;
             
             // Upload image

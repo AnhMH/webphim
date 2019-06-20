@@ -1,6 +1,6 @@
 <h1>Add Movie</h1>
 <?php
-    echo $this->Form->create($data, ['type' => 'file']);
+    echo $this->Form->create($data, ['type' => 'file', 'class' => 'custom-form']);
     echo $this->Form->control('name');
 ?>
 <div class="form-group">
@@ -29,7 +29,7 @@
     </select>
 </div>
 <?php
-    echo $this->Form->control('pro_year');
+    echo $this->Form->control('last_episode');
     echo $this->Form->button(__('Save'));
     echo $this->Form->end();
 ?>
