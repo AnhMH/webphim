@@ -34,6 +34,10 @@ WHERE
         $data = $connection->execute($sqlDetail)->fetchAll('assoc');
         if (!empty($data[0])) {
             $data = $data[0];
+            $pageTitle = !empty($data['name']) ? $data['name'] : '';
+            $pageDescription = !empty($data['meta_description']) ? $data['meta_description'] : '';
+            $pageKeyword = !empty($data['tags']) ? $data['tags'] : '';
+            $pageImage = !empty($data['image']) ? $data['image'] : '';
             $video = '';
             $ep = !empty($_GET['ep']) ? $_GET['ep'] : '';
             $server = !empty($_GET['s']) ? $_GET['s'] : 0;
@@ -60,7 +64,11 @@ WHERE
                 'ep',
                 'videos',
                 'server',
-                'video'
+                'video',
+                'pageTitle',
+                'pageDescription',
+                'pageKeyword',
+                'pageImage'
             )));
         } else {
             return $this->redirect($this->BASE_URL);

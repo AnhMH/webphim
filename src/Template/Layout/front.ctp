@@ -1,7 +1,7 @@
 <?php
-$webTitle = '';
-$webDescription = '';
-$webKeyword = '';
+$webTitle = 'NovelasTodayTV | Series Y Novelas Turcas';
+$webDescription = 'NovelasTodayTV | Series Y Novelas Turcas';
+$webKeyword = 'novelas, series';
 $webImage = '';
 $_description = !empty($pageDescription) ? strip_tags($pageDescription) : $webDescription;
 $_keyword = !empty($pageKeyword) ? $pageKeyword : $webKeyword;
@@ -34,7 +34,7 @@ $time = time();
         <meta name="twitter:image" content="<?php echo $_image; ?>" />
         <meta itemprop="image" content="<?php echo $_image; ?>" />
 
-        <meta name="generator" content="" />
+        <meta name="generator" content="NovelasTodayTV" />
 
         <link rel='dns-prefetch' href='//fonts.googleapis.com' />
         <link rel='dns-prefetch' href='//s.w.org' />
