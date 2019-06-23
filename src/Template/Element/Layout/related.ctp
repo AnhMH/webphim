@@ -10,7 +10,7 @@
                 <a title="<?php echo $v['name'];?>" href="<?php echo $BASE_URL;?>/videos/detail/<?php echo $v['slug'];?>">
                     <img alt="<?php echo $v['name'];?>" src="<?php echo $v['image'];?>">
                 </a>
-                <span class="mli-eps"><?php echo $v['last_episode'];?></span>
+                <span class="mli-eps"><span>HD</span></span>
             </div>
             <div class="name">
                 <h4>

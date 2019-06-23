@@ -20,7 +20,7 @@ echo $this->element('Layout/sliders', array(
                                     <a title="<?php echo $v['name'];?>" href="<?php echo $BASE_URL.'/videos/detail/'.$v['slug'];?>">
                                         <img alt="<?php echo $v['name'];?>" src="<?php echo $v['image'];?>">
                                     </a>
-                                    <span class="mli-eps"><span><?php echo $v['last_episode'];?></span></span>
+                                    <span class="mli-eps"><span>HD</span></span>
                                 </div>
                                 <div class="name">
                                     <h4>
