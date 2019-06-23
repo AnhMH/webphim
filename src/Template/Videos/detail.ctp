@@ -6,11 +6,6 @@
                     <span>Home</span>
                 </a>
             </div>
-            <div class="item">
-                <a href="<?php echo $BASE_URL;?>/cates/detail/<?php echo $data['cate_slug'];?>">
-                    <span><?php echo $data['cate_name'];?></span>
-                </a>
-            </div>
             <div href="<?php echo $BASE_URL;?>/videos/detail/<?php echo $data['slug'];?>" title="<?php echo $data['name'];?>" class="item">
                 <span><?php echo $data['name'];?></span>
             </div>
