@@ -85,4 +85,96 @@ WHERE
             'movies'
         )));
     }
+    
+    public function crawler() {
+        $data = array();
+        $urls = array(
+            'http://www.danfra.com/series.php',
+            'http://www.danfra.com/series.php?page=2',
+            'http://www.danfra.com/series.php?page=3',
+            'http://www.danfra.com/series.php?page=4',
+            'http://www.danfra.com/series.php?page=5'
+        );
+        $baseUrl = 'http://www.danfra.com/';
+        foreach ($urls as $url) {
+            // Get website content
+            $str = file_get_contents($url);
+            // Gets Webpage Internal Links
+            $doc = new \DOMDocument;
+            @$doc->loadHTML($str);
+
+            $contentNode = $doc->getElementById("wrapper");
+
+            $items = $this->getElementsByClass($contentNode, 'div', 'item-list');
+            foreach ($items as $item) {
+                $tmp = array();
+                $img = array();
+                $a = array();
+                $h5 = array();
+                $img = $this->getElementsByClass($item, 'img', 'thumbnail');
+                $h5 = $this->getElementsByClass($item, 'h5', 'add-title');
+                foreach ($h5 as $h) {
+                    $a = $h->getElementsByTagName("a");
+                    $tmp['link'] = $baseUrl.$a[0]->getAttribute('href');
+                    $tmp['name'] = $a[0]->textContent;
+                }
+                $tmp['image'] = $img[0]->getAttribute('src');
+                $data[] = $tmp;
+            }
+        }
+        $elements = array(
+            'name',
+            'link',
+            'image'
+        );
+        $sql = "INSERT IGNORE INTO `crawler_movies` (
+                `name`,
+                `link`,
+                `image`
+             ) VALUES ";
+        
+        $values = array();
+        foreach ($data as $v) {
+            $values[] = "('{$v['name']}', '{$v['link']}', '{$v['image']}')";
+        }
+        $sql .= implode(',', $values);
+        $dup = array();
+        foreach ($elements as $e) {
+            $dup[] = "`{$e}` = VALUES({$e})";
+        }
+        $sql .= " ON DUPLICATE KEY UPDATE " . implode(',', $dup);
+        $connection = ConnectionManager::get('default');
+        $connection->execute($sql);
+        die();
+    }
+    
+    public function crawlermovies() {
+        $connection = ConnectionManager::get('default');
+        $sql = "SELECT * FROM crawler_movies";
+        $data = $connection->execute($sql)->fetchAll('assoc');
+        foreach ($data as $v) {
+            // Get website content
+            $str = file_get_contents($v['link']);
+            // Gets Webpage Internal Links
+            $doc = new \DOMDocument;
+            @$doc->loadHTML($str);
+
+            $contentNode = $doc->getElementById("wrapper");
+            
+        }
+        die();
+    }
+    
+    public function getElementsByClass(&$parentNode, $tagName, $className) {
+        $nodes = array();
+
+        $childNodeList = $parentNode->getElementsByTagName($tagName);
+        for ($i = 0; $i < $childNodeList->length; $i++) {
+            $temp = $childNodeList->item($i);
+            if (stripos($temp->getAttribute('class'), $className) !== false) {
+                $nodes[]=$temp;
+            }
+        }
+        return $nodes;
+    }
 }
