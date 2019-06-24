@@ -2,7 +2,8 @@
 $types = array(
     '.mp4',
     'iframe',
-    'embed'
+    'embed',
+    'open-stream-player'
 );
 $type = 'mp4';
 foreach ($types as $t) {
@@ -13,7 +14,16 @@ foreach ($types as $t) {
 }
 ?>
 <div class="player-wrapper">
-    <?php if ($type == '.mp4'): ?>
+    <?php if ($type == 'open-stream-player'): ?>
+    <?php
+    $id = explode('-', $video);
+    ?>
+    <div id="moviePlayer">
+        <div style="width:100%; height:100%" class="open-stream-player" id="open-stream-player-<?php echo $id[3];?>"></div>
+        <script src="https://tune.pk/js/open/embed.js?vid=<?php echo $id[3];?>"></script>
+    </div>
+    
+    <?php elseif ($type == '.mp4'): ?>
     <script type="text/javascript" src="<?php echo $BASE_URL; ?>/js/jwplayer.js"></script>
     <div id="moviePlayer"></div>
     <script>
@@ -33,18 +43,16 @@ foreach ($types as $t) {
             provider: 'http'
         });
     </script>
-    <?php endif; ?>
     
-    <?php if (in_array($type, array('iframe'))): ?>
+    <?php elseif (in_array($type, array('iframe'))): ?>
     <div id="moviePlayer"><?php echo $video;?></div>
     <style>
         iframe {
             width: 100% !important;
         }
     </style>
-    <?php endif;?>
     
-    <?php if ($type == 'embed'): ?>
+    <?php elseif ($type == 'embed'): ?>
     <div id="moviePlayer"><iframe src="<?php echo $video;?>" style="width: 100%; min-height:500px"></iframe></div>
     <?php endif; ?>
     

@@ -149,31 +149,165 @@ WHERE
     }
     
     public function crawlermovies() {
+        $result = array();
+        $baseUrl = 'http://www.danfra.com/';
         $connection = ConnectionManager::get('default');
         $sql = "SELECT * FROM crawler_movies";
         $data = $connection->execute($sql)->fetchAll('assoc');
         foreach ($data as $v) {
+            $name = trim($v['name']);
+            $tmp = array(
+                'name' => $name,
+                'image' => $v['image'],
+                'slug' => $this->convertURL($name)
+            );
             // Get website content
             $str = file_get_contents($v['link']);
             // Gets Webpage Internal Links
             $doc = new \DOMDocument;
             @$doc->loadHTML($str);
-
             $contentNode = $doc->getElementById("wrapper");
             
+            $episodes = array();
+            $panelBody = $this->getElementsByClass($contentNode, 'div', 'panel-body');
+            foreach ($panelBody as $p) {
+                $ep = $p->getElementsByTagName("a");
+                $episodes[] = array(
+                    'link' => $baseUrl.$ep[0]->getAttribute('href'),
+                    'name' => trim(str_replace($name, '', $ep[0]->textContent))
+                );
+            }
+            
+            $fieldSet = $contentNode->getElementsByTagName("fieldset");
+            $tmp['description'] = trim($fieldSet[2]->getElementsByTagName("p")[0]->textContent);
+            $tmp['episodes'] = json_encode($episodes, JSON_UNESCAPED_UNICODE);
+            $result[] = $tmp;
         }
+        
+        $elements = array(
+            'name',
+            'slug',
+            'image',
+            'episodes',
+            'last_crawler',
+            'description'
+        );
+        $sql = "INSERT IGNORE INTO `movies` (
+                `name`,
+                `slug`,
+                `image`,
+                `episodes`,
+                `description`
+             ) VALUES ";
+        
+        $values = array();
+        foreach ($result as $v) {
+            $values[] = "('{$v['name']}', '{$v['slug']}', '{$v['image']}', '{$v['episodes']}', '{$v['description']}')";
+        }
+        $sql .= implode(',', $values);
+        $dup = array();
+        foreach ($elements as $e) {
+            $dup[] = "`{$e}` = VALUES({$e})";
+        }
+        $sql .= " ON DUPLICATE KEY UPDATE " . implode(',', $dup);
+        $connection = ConnectionManager::get('default');
+        $connection->execute($sql);
+        
+//        echo '<pre>';
+//        print_r($result);
+        die();
+    }
+    
+    public function crawlerepisodes() {
+        $result = array();
+        $errors = array();
+        $connection = ConnectionManager::get('default');
+        $sql = "SELECT * FROM movies limit 5";
+        $data = $connection->execute($sql)->fetchAll('assoc');
+        foreach ($data as $v) {
+            $episodes = json_decode($v['episodes'], true);
+            foreach ($episodes as $ep) {
+                $tmp = array(
+                    'name' => $ep['name'],
+                    'movie_id' => $v['id'],
+                    'slug' => $this->convertURL($ep['name'])
+                );
+                // Get website content
+                $str = file_get_contents($ep['link']);
+                // Gets Webpage Internal Links
+                $doc = new \DOMDocument;
+                @$doc->loadHTML($str);
+                $contentNode = $doc->getElementById("menu6");
+                if (!empty($contentNode)) {
+                    try {
+                        $videoIframes = $this->getElementsByClass($contentNode, 'div', 'videoiframe');
+                        foreach ($videoIframes as $vi) {
+                            $servers = array();
+                            $attr = $vi->getAttribute('data-id');
+                            if ($attr == 'opcion1') {
+                                $streams = $this->getElementsByClass($vi, 'div', 'open-stream-player');
+                                if (!empty($streams)) {
+                                    $servers[] = $streams[0]->getAttribute('id');
+                                }
+                            }
+                        }
+                        $tmp['servers'] = implode("\n", $servers);
+                        $result[] = $tmp;
+                    } catch (\Exception $ex) {
+                        $errors[] = array(
+                            'data' => $tmp,
+                            'error' => $ex
+                        );
+                    }
+                }
+                
+            }
+        }
+        
+        // Insert data
+        $elements = array(
+            'name',
+            'slug',
+            'movie_id',
+            'servers'
+        );
+        $sql = "INSERT IGNORE INTO `episodes` (
+                `name`,
+                `slug`,
+                `movie_id`,
+                `servers`
+             ) VALUES ";
+        
+        $values = array();
+        foreach ($result as $v) {
+            $values[] = "('{$v['name']}', '{$v['slug']}', '{$v['movie_id']}', '{$v['servers']}')";
+        }
+        $sql .= implode(',', $values);
+        $dup = array();
+        foreach ($elements as $e) {
+            $dup[] = "`{$e}` = VALUES({$e})";
+        }
+        $sql .= " ON DUPLICATE KEY UPDATE " . implode(',', $dup);
+        $connection = ConnectionManager::get('default');
+        $connection->execute($sql);
+        
+        echo '<pre>';
+        print_r($result);
         die();
     }
     
     public function getElementsByClass(&$parentNode, $tagName, $className) {
         $nodes = array();
-
-        $childNodeList = $parentNode->getElementsByTagName($tagName);
-        for ($i = 0; $i < $childNodeList->length; $i++) {
-            $temp = $childNodeList->item($i);
-            if (stripos($temp->getAttribute('class'), $className) !== false) {
-                $nodes[]=$temp;
+        try {
+            $childNodeList = $parentNode->getElementsByTagName($tagName);
+            for ($i = 0; $i < $childNodeList->length; $i++) {
+                $temp = $childNodeList->item($i);
+                if (stripos($temp->getAttribute('class'), $className) !== false) {
+                    $nodes[]=$temp;
+                }
             }
+        } catch (Exception $ex) {
+
         }
         return $nodes;
     }
