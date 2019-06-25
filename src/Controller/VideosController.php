@@ -41,7 +41,7 @@ WHERE
             $video = '';
             $ep = !empty($_GET['ep']) ? $_GET['ep'] : '';
             $server = !empty($_GET['s']) ? $_GET['s'] : 0;
-            $sqlEpisodes = "SELECT * FROM episodes WHERE movie_id = {$data['id']}";
+            $sqlEpisodes = "SELECT * FROM episodes WHERE movie_id = {$data['id']} ORDER BY id ASC";
             $episodes = $connection->execute($sqlEpisodes)->fetchAll('assoc');
             if (!empty($episodes)) {
                 if (empty($ep)) {
@@ -87,6 +87,9 @@ WHERE
     }
     
     public function crawler() {
+        ini_set('memory_limit', -1);
+        set_time_limit(-1);
+        ini_set('max_execution_time', -1);
         $data = array();
         $urls = array(
             'http://www.danfra.com/series.php',
@@ -149,6 +152,9 @@ WHERE
     }
     
     public function crawlermovies() {
+        ini_set('memory_limit', -1);
+        set_time_limit(-1);
+        ini_set('max_execution_time', -1);
         $result = array();
         $baseUrl = 'http://www.danfra.com/';
         $connection = ConnectionManager::get('default');
@@ -219,14 +225,18 @@ WHERE
     }
     
     public function crawlerepisodes() {
-        $result = array();
+        ini_set('memory_limit', -1);
+        set_time_limit(-1);
+        ini_set('max_execution_time', -1);
         $errors = array();
         $connection = ConnectionManager::get('default');
-        $sql = "SELECT * FROM movies limit 5";
+        $sql = "SELECT * FROM movies";
         $data = $connection->execute($sql)->fetchAll('assoc');
         foreach ($data as $v) {
+            $result = array();
             $episodes = json_decode($v['episodes'], true);
             foreach ($episodes as $ep) {
+                $servers = array();
                 $tmp = array(
                     'name' => $ep['name'],
                     'movie_id' => $v['id'],
@@ -237,62 +247,72 @@ WHERE
                 // Gets Webpage Internal Links
                 $doc = new \DOMDocument;
                 @$doc->loadHTML($str);
-                $contentNode = $doc->getElementById("menu6");
-                if (!empty($contentNode)) {
-                    try {
-                        $videoIframes = $this->getElementsByClass($contentNode, 'div', 'videoiframe');
-                        foreach ($videoIframes as $vi) {
-                            $servers = array();
-                            $attr = $vi->getAttribute('data-id');
-                            if ($attr == 'opcion1') {
-                                $streams = $this->getElementsByClass($vi, 'div', 'open-stream-player');
-                                if (!empty($streams)) {
-                                    $servers[] = $streams[0]->getAttribute('id');
+                for ($i = 1; $i <= 10; $i++) {
+                    $contentNode = $doc->getElementById("menu{$i}");
+                    if (!empty($contentNode)) {
+                        try {
+                            $videoIframes = $this->getElementsByClass($contentNode, 'div', 'videoiframe');
+                            foreach ($videoIframes as $vi) {
+                                $streams = array();
+                                $attr = $vi->getAttribute('data-id');
+                                if (strpos($attr, 'opcion') !== false) {
+                                    $streams = $this->getElementsByClass($vi, 'div', 'open-stream-player');
+                                    if (!empty($streams[0])) {
+                                        $servers[] = $streams[0]->getAttribute('id');
+                                    } else {
+                                        $streams = $vi->getElementsByTagName('iframe');
+                                        if (!empty($streams[0])) {
+                                            $servers[] = $streams[0]->getAttribute('src');
+                                        }
+                                    }
+                                } elseif (strpos($attr, 'parte') !== false) {
+                                    $streams = $vi->getElementsByTagName('iframe');
+                                    if (!empty($streams[0])) {
+                                        $servers[] = $streams[0]->getAttribute('src');
+                                    }
                                 }
                             }
+                        } catch (\Exception $ex) {
+                            $errors[] = array(
+                                'data' => $tmp,
+                                'error' => $ex
+                            );
                         }
-                        $tmp['servers'] = implode("\n", $servers);
-                        $result[] = $tmp;
-                    } catch (\Exception $ex) {
-                        $errors[] = array(
-                            'data' => $tmp,
-                            'error' => $ex
-                        );
                     }
                 }
-                
+                $tmp['servers'] = implode("\n", $servers);
+                $result[] = $tmp;
             }
+            
+            // Insert data
+            $elements = array(
+                'name',
+                'slug',
+                'movie_id',
+                'servers'
+            );
+            $sql = "INSERT IGNORE INTO `episodes` (
+                    `name`,
+                    `slug`,
+                    `movie_id`,
+                    `servers`
+                 ) VALUES ";
+
+            $values = array();
+            foreach ($result as $v) {
+                $values[] = "('{$v['name']}', '{$v['slug']}', '{$v['movie_id']}', '{$v['servers']}')";
+            }
+            $sql .= implode(',', $values);
+            $dup = array();
+            foreach ($elements as $e) {
+                $dup[] = "`{$e}` = VALUES({$e})";
+            }
+            $sql .= " ON DUPLICATE KEY UPDATE " . implode(',', $dup);
+            $connection = ConnectionManager::get('default');
+            $connection->execute($sql);
         }
-        
-        // Insert data
-        $elements = array(
-            'name',
-            'slug',
-            'movie_id',
-            'servers'
-        );
-        $sql = "INSERT IGNORE INTO `episodes` (
-                `name`,
-                `slug`,
-                `movie_id`,
-                `servers`
-             ) VALUES ";
-        
-        $values = array();
-        foreach ($result as $v) {
-            $values[] = "('{$v['name']}', '{$v['slug']}', '{$v['movie_id']}', '{$v['servers']}')";
-        }
-        $sql .= implode(',', $values);
-        $dup = array();
-        foreach ($elements as $e) {
-            $dup[] = "`{$e}` = VALUES({$e})";
-        }
-        $sql .= " ON DUPLICATE KEY UPDATE " . implode(',', $dup);
-        $connection = ConnectionManager::get('default');
-        $connection->execute($sql);
-        
-        echo '<pre>';
-        print_r($result);
+//        echo '<pre>';
+//        print_r($result);
         die();
     }
     
