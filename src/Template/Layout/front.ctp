@@ -70,6 +70,9 @@ $time = time();
                     navigationText: ['<div class="control prev"></div>', '<div class="control next"></div>']
                 });
             });
+            function hide_preloader() {
+                $('.loader').fadeOut();
+            }
         </script>
         <style>
             #hide_float_left a {
@@ -90,11 +93,12 @@ $time = time();
         </script>
     </head>
 
-    <body id="<?php echo $controller . '-' . $action; ?>">
+    <body onload="hide_preloader()" id="<?php echo $controller . '-' . $action; ?>">
         <div id="fptplay-container" style="position: relative;">
             <?php echo $this->element('Layout/header');?>
             <?= $this->fetch('content') ?>
             <?php echo $this->element('Layout/footer');?>
         </div>
+        <div class="loader"><span></span></div>
     </body>
 </html>
