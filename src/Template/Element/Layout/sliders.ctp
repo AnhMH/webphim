@@ -9,7 +9,7 @@
                             <img alt="<?php echo $v['name'];?>" src="<?php echo $v['image'];?>">
                         </a>
                     </div>
-                    <div class="status">HD</div>
+                    <div class="status"><?php echo !empty($v['last_episode']) ? $v['last_episode'] : 'HD';?></div>
                     <div class="info">
                         <a title="<?php echo $v['name'];?>" href="<?php echo $BASE_URL.'/videos/detail/'.$v['slug'];?>"><?php echo $v['name'];?></a>
                         <dfn><?php echo $v['name'];?></dfn>

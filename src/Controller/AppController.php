@@ -191,7 +191,7 @@ class AppController extends Controller
     public function getNewMovies()
     {
         $data = array();
-        $data = TableRegistry::get('Movies')->find()->limit(10)->toList();
+        $data = TableRegistry::get('Movies')->find()->orderDesc('updated')->limit(10)->toList();
         return $data;
     }
     

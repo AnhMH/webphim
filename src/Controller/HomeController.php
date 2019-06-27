@@ -13,7 +13,7 @@ class HomeController extends AppController
     
     public function index()
     {
-        $movies = TableRegistry::get('Movies')->find()->orderDesc('id')->toList();
+        $movies = TableRegistry::get('Movies')->find()->orderDesc('updated')->toList();
         $this->set(compact(array(
             'movies'
         )));

@@ -31,7 +31,7 @@
             <ul>
                 <?php foreach ($_randomMovies as $v): ?>
                 <li>
-                    <span class="status">HD</span>
+                    <span class="status"><?php echo !empty($v['last_episode']) ? $v['last_episode'] : 'HD';?></span>
                     <img alt="<?php echo $v['name'];?>" src="<?php echo $v['image'];?>">
                     <a title="<?php echo $v['name'];?>" href="<?php echo $BASE_URL.'/videos/detail/'.$v['slug'];?>"><?php echo $v['name'];?></a>
                     <dfn><?php echo $v['name'];?></dfn>

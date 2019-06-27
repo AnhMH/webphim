@@ -157,68 +157,76 @@ WHERE
         ini_set('max_execution_time', -1);
         $result = array();
         $baseUrl = 'http://www.danfra.com/';
+        $crawlermovieIds = array();
         $connection = ConnectionManager::get('default');
-        $sql = "SELECT * FROM crawler_movies";
+        $sql = "SELECT * FROM crawler_movies where updated is null";
         $data = $connection->execute($sql)->fetchAll('assoc');
-        foreach ($data as $v) {
-            $name = trim($v['name']);
-            $tmp = array(
-                'name' => $name,
-                'image' => $v['image'],
-                'slug' => $this->convertURL($name)
-            );
-            // Get website content
-            $str = file_get_contents($v['link']);
-            // Gets Webpage Internal Links
-            $doc = new \DOMDocument;
-            @$doc->loadHTML($str);
-            $contentNode = $doc->getElementById("wrapper");
-            
-            $episodes = array();
-            $panelBody = $this->getElementsByClass($contentNode, 'div', 'panel-body');
-            foreach ($panelBody as $p) {
-                $ep = $p->getElementsByTagName("a");
-                $episodes[] = array(
-                    'link' => $baseUrl.$ep[0]->getAttribute('href'),
-                    'name' => trim(str_replace($name, '', $ep[0]->textContent))
+        if (!empty($data)) {
+            foreach ($data as $v) {
+                $crawlermovieIds[] = $v['id'];
+                $name = trim($v['name']);
+                $tmp = array(
+                    'name' => $name,
+                    'image' => $v['image'],
+                    'slug' => $this->convertURL($name)
                 );
+                // Get website content
+                $str = file_get_contents($v['link']);
+                // Gets Webpage Internal Links
+                $doc = new \DOMDocument;
+                @$doc->loadHTML($str);
+                $contentNode = $doc->getElementById("wrapper");
+
+                $episodes = array();
+                $panelBody = $this->getElementsByClass($contentNode, 'div', 'panel-body');
+                foreach ($panelBody as $p) {
+                    $ep = $p->getElementsByTagName("a");
+                    $episodes[] = array(
+                        'link' => $baseUrl.$ep[0]->getAttribute('href'),
+                        'name' => trim(str_replace($name, '', $ep[0]->textContent))
+                    );
+                }
+
+                $fieldSet = $contentNode->getElementsByTagName("fieldset");
+                $tmp['description'] = trim($fieldSet[2]->getElementsByTagName("p")[0]->textContent);
+                $tmp['episodes'] = json_encode($episodes, JSON_UNESCAPED_UNICODE);
+                $result[] = $tmp;
             }
-            
-            $fieldSet = $contentNode->getElementsByTagName("fieldset");
-            $tmp['description'] = trim($fieldSet[2]->getElementsByTagName("p")[0]->textContent);
-            $tmp['episodes'] = json_encode($episodes, JSON_UNESCAPED_UNICODE);
-            $result[] = $tmp;
+
+            $elements = array(
+                'name',
+                'slug',
+                'image',
+                'episodes',
+                'last_crawler',
+                'description'
+            );
+            $sql = "INSERT IGNORE INTO `movies` (
+                    `name`,
+                    `slug`,
+                    `image`,
+                    `episodes`,
+                    `description`
+                 ) VALUES ";
+
+            $values = array();
+            foreach ($result as $v) {
+                $values[] = "('{$v['name']}', '{$v['slug']}', '{$v['image']}', '{$v['episodes']}', '{$v['description']}')";
+            }
+            $sql .= implode(',', $values);
+            $dup = array();
+            foreach ($elements as $e) {
+                $dup[] = "`{$e}` = VALUES({$e})";
+            }
+            $sql .= " ON DUPLICATE KEY UPDATE " . implode(',', $dup);
+            $connection = ConnectionManager::get('default');
+            $connection->execute($sql);
+            if (!empty($crawlermovieIds)) {
+                $ids = implode(',', $crawlermovieIds);
+                $time = time();
+                $connection->execute("UPDATE crawler_movies SET updated = {$time} WHERE id IN ({$ids})");
+            }
         }
-        
-        $elements = array(
-            'name',
-            'slug',
-            'image',
-            'episodes',
-            'last_crawler',
-            'description'
-        );
-        $sql = "INSERT IGNORE INTO `movies` (
-                `name`,
-                `slug`,
-                `image`,
-                `episodes`,
-                `description`
-             ) VALUES ";
-        
-        $values = array();
-        foreach ($result as $v) {
-            $values[] = "('{$v['name']}', '{$v['slug']}', '{$v['image']}', '{$v['episodes']}', '{$v['description']}')";
-        }
-        $sql .= implode(',', $values);
-        $dup = array();
-        foreach ($elements as $e) {
-            $dup[] = "`{$e}` = VALUES({$e})";
-        }
-        $sql .= " ON DUPLICATE KEY UPDATE " . implode(',', $dup);
-        $connection = ConnectionManager::get('default');
-        $connection->execute($sql);
-        
 //        echo '<pre>';
 //        print_r($result);
         die();
@@ -351,8 +359,45 @@ WHERE
              ) VALUES ";
 
         $values = array();
+        $movieData = array();
         foreach ($result as $v) {
+            $movieData[] = array(
+                'id' => $v['movie_id'],
+                'last_episode' => $v['name'],
+                'updated' => time() + 1
+            );
             $values[] = "('{$v['name']}', '{$v['slug']}', '{$v['movie_id']}', '{$v['servers']}')";
+        }
+        $sql .= implode(',', $values);
+        $dup = array();
+        foreach ($elements as $e) {
+            $dup[] = "`{$e}` = VALUES({$e})";
+        }
+        $sql .= " ON DUPLICATE KEY UPDATE " . implode(',', $dup);
+        $connection = ConnectionManager::get('default');
+        $connection->execute($sql);
+        $this->updateMovies($movieData);
+        
+        return true;
+    }
+    
+    public function updateMovies($result) {
+        // Insert data
+        $elements = array(
+            'id',
+            'last_episode',
+            'updated'
+        );
+        $sql = "INSERT IGNORE INTO `movies` (
+                `id`,
+                `last_episode`,
+                `updated`
+             ) VALUES ";
+
+        $values = array();
+        $movieData = array();
+        foreach ($result as $v) {
+            $values[] = "('{$v['id']}', '{$v['last_episode']}', '{$v['updated']}')";
         }
         $sql .= implode(',', $values);
         $dup = array();
