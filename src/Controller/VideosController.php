@@ -236,83 +236,86 @@ WHERE
             $result = array();
             $episodes = json_decode($v['episodes'], true);
             foreach ($episodes as $ep) {
-                $servers = array();
                 $tmp = array(
                     'name' => $ep['name'],
                     'movie_id' => $v['id'],
                     'slug' => $this->convertURL($ep['name'])
                 );
-                // Get website content
-                $str = file_get_contents($ep['link']);
-                // Gets Webpage Internal Links
-                $doc = new \DOMDocument;
-                @$doc->loadHTML($str);
-                for ($i = 1; $i <= 10; $i++) {
-                    $contentNode = $doc->getElementById("menu{$i}");
-                    if (!empty($contentNode)) {
-                        try {
-                            $videoIframes = $this->getElementsByClass($contentNode, 'div', 'videoiframe');
-                            foreach ($videoIframes as $vi) {
-                                $streams = array();
-                                $attr = $vi->getAttribute('data-id');
-                                if (strpos($attr, 'opcion') !== false) {
-                                    $streams = $this->getElementsByClass($vi, 'div', 'open-stream-player');
-                                    if (!empty($streams[0])) {
-                                        $servers[] = $streams[0]->getAttribute('id');
-                                    } else {
-                                        $streams = $vi->getElementsByTagName('iframe');
-                                        if (!empty($streams[0])) {
-                                            $servers[] = $streams[0]->getAttribute('src');
-                                        }
-                                    }
-                                } elseif (strpos($attr, 'parte') !== false) {
-                                    $streams = $vi->getElementsByTagName('iframe');
-                                    if (!empty($streams[0])) {
-                                        $servers[] = $streams[0]->getAttribute('src');
-                                    }
-                                }
-                            }
-                        } catch (\Exception $ex) {
-                            $errors[] = array(
-                                'data' => $tmp,
-                                'error' => $ex
-                            );
-                        }
-                    }
-                }
+                $servers = $this->getepisodes($ep['link']);
                 $tmp['servers'] = implode("\n", $servers);
                 $result[] = $tmp;
             }
-            
-            // Insert data
-            $elements = array(
-                'name',
-                'slug',
-                'movie_id',
-                'servers'
-            );
-            $sql = "INSERT IGNORE INTO `episodes` (
-                    `name`,
-                    `slug`,
-                    `movie_id`,
-                    `servers`
-                 ) VALUES ";
-
-            $values = array();
-            foreach ($result as $v) {
-                $values[] = "('{$v['name']}', '{$v['slug']}', '{$v['movie_id']}', '{$v['servers']}')";
-            }
-            $sql .= implode(',', $values);
-            $dup = array();
-            foreach ($elements as $e) {
-                $dup[] = "`{$e}` = VALUES({$e})";
-            }
-            $sql .= " ON DUPLICATE KEY UPDATE " . implode(',', $dup);
-            $connection = ConnectionManager::get('default');
-            $connection->execute($sql);
+            $this->addepisodes($result);
         }
 //        echo '<pre>';
 //        print_r($result);
+        die();
+    }
+    
+    public function getNewEpisodes() {
+        ini_set('memory_limit', -1);
+        set_time_limit(-1);
+        ini_set('max_execution_time', -1);
+        $result = array();
+        $data = array();
+        $baseUrl = 'http://www.danfra.com/';
+        $episodePre = 'Capítulo ';
+        $connection = ConnectionManager::get('default');
+        
+        // Get website content
+        $str = file_get_contents($baseUrl);
+        // Gets Webpage Internal Links
+        $doc = new \DOMDocument;
+        @$doc->loadHTML($str);
+
+        $contentNode = $doc->getElementById("wrapper");
+
+        $items = $this->getElementsByClass($contentNode, 'div', 'category-content');
+        if (!empty($items[0])) {
+//            foreach ($items as $item) {
+                $links = $items[4]->getElementsByTagName('a');
+                if (!empty($links[0])) {
+                    foreach ($links as $link) {
+                        $tmp = array();
+                        $name = $link->getElementsByTagName('h3');
+                        if (!empty($name[0])) {
+                            $tmp['link'] = $baseUrl.$link->getAttribute('href');
+                            $tmp['name'] = $name[0]->textContent;
+                            $result[] = $tmp;
+                        }
+                    }
+                }
+//            }
+        }
+        
+        $episodeModel = TableRegistry::get('Episodes');
+        if (!empty($result)) {
+            foreach ($result as $v) {
+                $name = explode(" 1x", $v['name']);
+                $movieSlug = $this->convertURL($name[0]);
+                $episodeName = $episodePre.$name[1];
+                $movie = $connection->execute("SELECT * FROM movies where slug = '{$movieSlug}' LIMIT 1")->fetchAll('assoc');
+                if (!empty($movie[0])) {
+                    $episode = $episodeModel->find()->where(['name' => $episodeName, 'movie_id' => $movie[0]['id']])->toArray();
+                    if (empty($episode)) {
+                        $tmp = array(
+                            'name' => $episodeName,
+                            'movie_id' => $movie[0]['id'],
+                            'slug' => $this->convertURL($episodeName)
+                        );
+                        $servers = $this->getepisodes($v['link']);
+                        $tmp['servers'] = implode("\n", $servers);
+                        $data[] = $tmp;
+                    }
+                }
+            }
+            if (!empty($data)) {
+                $this->addepisodes($data);
+            }
+        }
+        
+        echo '<pre>';
+        print_r($data);
         die();
     }
     
@@ -330,5 +333,79 @@ WHERE
 
         }
         return $nodes;
+    }
+    
+    public function addepisodes($result) {
+        // Insert data
+        $elements = array(
+            'name',
+            'slug',
+            'movie_id',
+            'servers'
+        );
+        $sql = "INSERT IGNORE INTO `episodes` (
+                `name`,
+                `slug`,
+                `movie_id`,
+                `servers`
+             ) VALUES ";
+
+        $values = array();
+        foreach ($result as $v) {
+            $values[] = "('{$v['name']}', '{$v['slug']}', '{$v['movie_id']}', '{$v['servers']}')";
+        }
+        $sql .= implode(',', $values);
+        $dup = array();
+        foreach ($elements as $e) {
+            $dup[] = "`{$e}` = VALUES({$e})";
+        }
+        $sql .= " ON DUPLICATE KEY UPDATE " . implode(',', $dup);
+        $connection = ConnectionManager::get('default');
+        $connection->execute($sql);
+        
+        return true;
+    }
+    
+    public function getepisodes($url) {
+        $servers = array();
+        // Get website content
+        $str = file_get_contents($url);
+        // Gets Webpage Internal Links
+        $doc = new \DOMDocument;
+        @$doc->loadHTML($str);
+        for ($i = 1; $i <= 10; $i++) {
+            $contentNode = $doc->getElementById("menu{$i}");
+            if (!empty($contentNode)) {
+                try {
+                    $videoIframes = $this->getElementsByClass($contentNode, 'div', 'videoiframe');
+                    foreach ($videoIframes as $vi) {
+                        $streams = array();
+                        $attr = $vi->getAttribute('data-id');
+                        if (strpos($attr, 'opcion') !== false) {
+                            $streams = $this->getElementsByClass($vi, 'div', 'open-stream-player');
+                            if (!empty($streams[0])) {
+                                $servers[] = $streams[0]->getAttribute('id');
+                            } else {
+                                $streams = $vi->getElementsByTagName('iframe');
+                                if (!empty($streams[0])) {
+                                    $servers[] = $streams[0]->getAttribute('src');
+                                }
+                            }
+                        } elseif (strpos($attr, 'parte') !== false) {
+                            $streams = $vi->getElementsByTagName('iframe');
+                            if (!empty($streams[0])) {
+                                $servers[] = $streams[0]->getAttribute('src');
+                            }
+                        }
+                    }
+                } catch (\Exception $ex) {
+                    $errors[] = array(
+                        'data' => $url,
+                        'error' => $ex
+                    );
+                }
+            }
+        }
+        return $servers;
     }
 }
